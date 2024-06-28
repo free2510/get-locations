@@ -9,6 +9,13 @@
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; }
+        .marker-title {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -26,15 +33,25 @@
                 zoom: 12
             });
 
-            // Add marker for the first point (red)
-            new mapboxgl.Marker({ color: 'red' })
+            // Add marker for the first point (red) with title "My Location"
+            var marker1 = new mapboxgl.Marker({ color: 'red' })
                 .setLngLat([lng1, lat1])
                 .addTo(map);
 
-            // Add marker for the second point (blue)
-            new mapboxgl.Marker({ color: 'blue' })
+            var popup1 = new mapboxgl.Popup({ offset: 25 })
+                .setHTML('<div class="marker-title">My Location</div>');
+
+            marker1.setPopup(popup1).togglePopup();
+
+            // Add marker for the second point (blue) with title "Target Point"
+            var marker2 = new mapboxgl.Marker({ color: 'blue' })
                 .setLngLat([lng2, lat2])
                 .addTo(map);
+
+            var popup2 = new mapboxgl.Popup({ offset: 25 })
+                .setHTML('<div class="marker-title">Target Point</div>');
+
+            marker2.setPopup(popup2).togglePopup();
 
             // Fetch route using Mapbox Directions API
             fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${lng1},${lat1};${lng2},${lat2}?geometries=geojson&access_token=${mapboxgl.accessToken}`)
