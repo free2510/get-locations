@@ -38,6 +38,8 @@ You can test the functionality of the map by providing different sets of latitud
 
 - Streets view: `index.html?lat1=40.7128&lng1=-74.0060&lat2=34.0522&lng2=-118.2437&mapType=streets`
 - Satellite view: `index.html?lat1=40.7128&lng1=-74.0060&lat2=34.0522&lng2=-118.2437&mapType=satellite`
+- [Example URL](https://free2510.github.io/get-locations/index.html?lat1=27.271167204550675&lng1=31.262232893587928&lat2=27.27104775255930&lng2=31.26251900337950&mapType=satellite)
+
 
 ## License
 
