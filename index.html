@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Satellite Map API</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZWZyZWU2MCIsImEiOiJjbHdyZ2hlamwwMGczMmlzYXJiem9oaHFxIn0.bp_4Do2mZmVjZwkDxlWmfw';
+
+        function initializeMap(lat1, lng1, lat2, lng2, mapType) {
+            var mapStyle = mapType === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v11';
+
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: mapStyle,
+                center: [lng1, lat1],
+                zoom: 12
+            });
+
+            // Add marker for the first point (red)
+            new mapboxgl.Marker({ color: 'red' })
+                .setLngLat([lng1, lat1])
+                .addTo(map);
+
+            // Add marker for the second point (blue)
+            new mapboxgl.Marker({ color: 'blue' })
+                .setLngLat([lng2, lat2])
+                .addTo(map);
+
+            // Fetch route using Mapbox Directions API
+            fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${lng1},${lat1};${lng2},${lat2}?geometries=geojson&access_token=${mapboxgl.accessToken}`)
+                .then(response => response.json())
+                .then(data => {
+                    var route = data.routes[0].geometry;
+                    map.addLayer({
+                        'id': 'route',
+                        'type': 'line',
+                        'source': {
+                            'type': 'geojson',
+                            'data': {
+                                'type': 'Feature',
+                                'properties': {},
+                                'geometry': route
+                            }
+                        },
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': '#3887be',
+                            'line-width': 8
+                        }
+                    });
+                });
+
+        }
+
+        // Get parameters from query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const lat1 = urlParams.get('lat1');
+        const lng1 = urlParams.get('lng1');
+        const lat2 = urlParams.get('lat2');
+        const lng2 = urlParams.get('lng2');
+        const mapType = urlParams.get('mapType') || 'streets'; // Default to 'streets' if not provided
+
+        // Initialize map with provided coordinates and map type
+        if (lat1 && lng1 && lat2 && lng2) {
+            initializeMap(parseFloat(lat1), parseFloat(lng1), parseFloat(lat2), parseFloat(lng2), mapType);
+        } else {
+            console.error("Latitude and longitude are required for both points.");
+        }
+    </script>
+</body>
+</html>
